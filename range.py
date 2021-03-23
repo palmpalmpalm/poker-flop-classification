@@ -47,18 +47,22 @@ def pos_to_combo(i, j):
     else:  # off suit
         return deck[i] + deck[j] + 'o'
 
-
+# Class Range as poker range container
 class Range:
-    # init range to 0 combos
+    # create len_deck as length of deck
+    # create range_c as range combos
+    # create range_p as range in percent
     len_deck = len(deck)
     range_c = np.zeros((len_deck, len_deck))
     range_p = np.zeros((len_deck, len_deck))
 
+    #init range
     def __init__(self, text='None'):
         if text == 'None':
             return
         self.set_range(text)
 
+    #set range to input combos in flopzilla/GTO+ format
     def set_range(self, text):
         text_order = text.split(',')
         # print(text_order)
@@ -105,6 +109,7 @@ class Range:
 
         self.set_percent_range()
 
+    #store combos as percent to range_p
     def set_percent_range(self):
         for i in range(self.len_deck):
             for j in range(self.len_deck):
@@ -186,6 +191,7 @@ class Range:
 
 
 if __name__ == '__main__':
+    # test
     t = input("Enter range : ").strip()
     A = Range(t)
     A.show_combos()
