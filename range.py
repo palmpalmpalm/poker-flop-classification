@@ -5,15 +5,15 @@ import seaborn as sns
 deck2 = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 deck = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
 
-# init cover
+# init cover /may change to static variable later
 cover_list_temp = []
 for i in range(len(deck2) - 1, -1, -1):
     cover_row_temp = []
     for j in range(len(deck2) - 1, -1, -1):
-        if i == j:
+        if i == j:  # pocket
             cover_row_temp.append(deck2[i] + deck2[j])
-        elif j < i:
-            cover_row_temp.append(deck2[max(i, j)] + deck2[min(i, j)] + "s")
+        elif j < i:  # suit
+            cover_row_temp.append(deck2[max(i, j)] + deck2[min(i, j)] + "s")  # max, min use for order card
         else:
             cover_row_temp.append(deck2[max(i, j)] + deck2[min(i, j)] + "o")
     cover_list_temp.append(cover_row_temp)
@@ -47,7 +47,8 @@ def pos_to_combo(i, j):
     else:  # off suit
         return deck[i] + deck[j] + 'o'
 
-# Class Range as poker range container
+
+# class Range as poker range container
 class Range:
     # create len_deck as length of deck
     # create range_c as range combos
@@ -56,37 +57,42 @@ class Range:
     range_c = np.zeros((len_deck, len_deck))
     range_p = np.zeros((len_deck, len_deck))
 
-    #init range
+    # init range
     def __init__(self, text='None'):
         if text == 'None':
             return
         self.set_range(text)
 
-    #set range to input combos in flopzilla/GTO+ format
+    # set range to input combos in flopzilla/GTO+ format
     def set_range(self, text):
         text_order = text.split(',')
         # print(text_order)
         weight = 100.0
         for order in text_order:
+            # find weight for each order
             if order[0] == '[':
                 weight = float(order[1:5])
 
+            # set start index to first combo
             start_index = order.find(']')
             if start_index == -1:
                 start_index = 0
             else:
                 start_index += 1  # shift 1
 
+            # set stop index to last combo
             stop_index = order.find('[', start_index)
             if stop_index == -1:
                 stop_index = len(order)
 
+            # '/' is special case for last combo
             if '/' in order:
                 if order[0] != '[':
                     stop_index = order.find('[')
                     start_index = 0
 
-            if '-' in order:
+            # start filling range (case 1 is multi combos/case 2 is single combo)
+            if '-' in order:  # case 1
                 start_combo, stop_combo = order[start_index:stop_index].split('-')
                 i, j = get_combo_position(start_combo)
                 ie, je = get_combo_position(stop_combo)
@@ -100,16 +106,18 @@ class Range:
                     else:  # off suit
                         j += 1
                 self.add_combo(ie, je, weight)
-            else:
+            else:  # case 2
                 i, j = get_combo_position(order[start_index:stop_index])
                 self.add_combo(i, j, weight)
 
+            # check is last combo of this weight
             if order[len(order) - 1] == ']':
                 weight = 100.0
 
+        # create range in percent
         self.set_percent_range()
 
-    #store combos as percent to range_p
+    # store combos as percent to range_p
     def set_percent_range(self):
         for i in range(self.len_deck):
             for j in range(self.len_deck):
