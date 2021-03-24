@@ -42,7 +42,7 @@ def get_combo_position(combo):
 def pos_to_combo(i, j):
     if i == j:  # pocket
         return deck[i] + deck[j]
-    elif j < i:  # suit
+    elif j > i:  # suit
         return deck[i] + deck[j] + 's'
     else:  # off suit
         return deck[i] + deck[j] + 'o'
@@ -64,7 +64,8 @@ class Range:
         self.set_range(text)
 
     # set range to input combos in flopzilla/GTO+ format
-    def set_range(self, text):
+    @classmethod
+    def set_range(cls, text):
         text_order = text.split(',')
         # print(text_order)
         weight = 100.0
@@ -97,7 +98,7 @@ class Range:
                 i, j = get_combo_position(start_combo)
                 ie, je = get_combo_position(stop_combo)
                 while i != ie or j != je:
-                    self.add_combo(i, j, weight)
+                    cls.add_combo(i, j, weight)
                     if i == j:  # pocket
                         i += 1
                         j += 1
@@ -105,80 +106,90 @@ class Range:
                         i += 1
                     else:  # off suit
                         j += 1
-                self.add_combo(ie, je, weight)
+                cls.add_combo(ie, je, weight)
             else:  # case 2
                 i, j = get_combo_position(order[start_index:stop_index])
-                self.add_combo(i, j, weight)
+                cls.add_combo(i, j, weight)
 
             # check is last combo of this weight
             if order[len(order) - 1] == ']':
                 weight = 100.0
 
         # create range in percent
-        self.set_percent_range()
+        cls.set_percent_range()
 
     # store combos as percent to range_p
-    def set_percent_range(self):
-        for i in range(self.len_deck):
-            for j in range(self.len_deck):
+    @classmethod
+    def set_percent_range(cls):
+        for i in range(cls.len_deck):
+            for j in range(cls.len_deck):
                 if i == j:  # pocket
-                    self.range_p[i, j] = (self.range_c[i, j] / 6) * 100
-                elif j < i:  # suit
-                    self.range_p[i, j] = (self.range_c[i, j] / 4) * 100
+                    cls.range_p[i, j] = (cls.range_c[i, j] / 6) * 100
+                elif j > i:  # suit
+                    cls.range_p[i, j] = (cls.range_c[i, j] / 4) * 100
                 else:  # off suit
-                    self.range_p[i, j] = (self.range_c[i, j] / 12) * 100
+                    cls.range_p[i, j] = (cls.range_c[i, j] / 12) * 100
 
     # add combo to range
-    def add_combo(self, i, j, weight=100):
+    @classmethod
+    def add_combo(cls, i, j, weight=100):
         if i == j:  # pocket
             w = (weight / 100) * 6
-            self.range_c[i, j] = w
-        elif j < i:  # suit
+            cls.range_c[i, j] = w
+        elif j > i:  # suit
             w = (weight / 100) * 4
-            self.range_c[i, j] = w
+            cls.range_c[i, j] = w
         else:  # off suit
             w = (weight / 100) * 12
-            self.range_c[i, j] = w
+            cls.range_c[i, j] = w
 
     # fill range to 100%
-    def fill_100_range(self):
-        for i in range(self.len_deck):
-            for j in range(self.len_deck):
-                if i == j:
-                    self.range_c[i, j] = 6
-                elif j < i:
-                    self.range_c[i, j] = 4  # suit combo
-                else:
-                    self.range_c[i, j] = 12  # off suit
+    @classmethod
+    def fill_100_range(cls):
+        for i in range(cls.len_deck):
+            for j in range(cls.len_deck):
+                if i == j: # pocket
+                    cls.range_c[i, j] = 6
+                elif j > i: # suit
+                    cls.range_c[i, j] = 4
+                else: # off suit
+                    cls.range_c[i, j] = 12
 
     # get percent of available combos in range
-    def get_percent_of_range(self):
-        total_combos = np.sum(self.range_c)
+    @classmethod
+    def get_percent_of_range(cls):
+        total_combos = np.sum(cls.range_c)
         return (total_combos / 1326) * 100
 
     # get number of input combo
-    def get_combo(self, combo):
+    @classmethod
+    def get_combo(cls, combo):
         i, j = get_combo_position(combo)
-        return self.range_c[i, j]
+        return cls.range_c[i, j]
 
     # set number of input combo
-    def set_combo(self, number, combo):
+    @classmethod
+    def set_combo(cls, number, combo):
         i, j = get_combo_position(combo)
-        self.range_c[i, j] = number
+        cls.range_c[i, j] = number
 
     # get number of input combo by position
-    def get_combo_by_pos(self, i, j):
-        return self.range_c[i, j]
+    @classmethod
+    def get_combo_by_pos(cls, i, j):
+        return cls.range_c[i, j]
 
     # set number of input combo by position
-    def set_combo_by_pos(self, number, i, j):
-        self.range_c[i, j] = number
+    @classmethod
+    def set_combo_by_pos(cls, number, i, j):
+        cls.range_c[i, j] = number
 
     # display number of combos in range
-    def show_combos(self):
+    @classmethod
+    def show_combos(cls):
         fig, ax = plt.subplots()
-        ax = sns.heatmap(self.range_c, annot=self.range_c, square=True, color='white')
-        ax.set_title('Range')
+        ax = sns.heatmap(cls.range_c, annot=cls.range_c, square=True, color='white')
+        total_combos = np.sum(cls.range_c)
+        ax.set_title('Total combos : '+str(total_combos))
         ax.xaxis.tick_top()
         ax.set_xticklabels(deck)
         ax.set_yticklabels(deck, rotation=0)
@@ -186,24 +197,33 @@ class Range:
         plt.show()
 
     # display percent of combos in range
-    def show_range(self):
+    @classmethod
+    def show_range(cls):
         fig, ax = plt.subplots()
-        ax = sns.heatmap(self.range_p, annot=cover, fmt='', cmap="YlGnBu", linewidths=.5, linecolor='black',
+        ax = sns.heatmap(cls.range_p, annot=cover, fmt='', cmap="YlGnBu", linewidths=.5, linecolor='black',
                          square=True)
-        ax.set_title('Range')
+        percent_range = cls.get_percent_of_range()
+        ax.set_title('Range : '+str(percent_range)+'%')
         ax.xaxis.tick_top()
         ax.set_xticklabels(deck)
         ax.set_yticklabels(deck, rotation=0)
         plt.tight_layout()
         plt.show()
 
+    # display combos and percent of range
+    @classmethod
+    def show(cls):
+        pass
+
 
 if __name__ == '__main__':
     # test
     t = input("Enter range : ").strip()
     A = Range(t)
-    A.show_combos()
+    # A.fill_100_range()
+    # A.show_combos()
     A.show_range()
+    A.show_combos()
     # print(get_combo_position('AQs'))
     # B = Range()
     # B.add_combo('AKs',100)
