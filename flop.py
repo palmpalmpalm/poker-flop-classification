@@ -17,13 +17,16 @@ STR = ["OESD", "GUTSHOT", "STRAIGHT", "NONE"]  # Straights Type
 
 
 class Flop:
+    # create list of flop, card in flop, and suit in flop
     flop = []
-    flop_card = [0,0,0,0,0,0,0,0,0,0,0,0,0]
-    flpo_suit = [0,0,0,0]
+    flop_card = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    flop_suit = [0, 0, 0, 0]
 
+    # init flop with input flop
     def __init__(self, text):
         self.set_flop(text)
 
+    # set flop
     @classmethod
     def set_flop(cls, text):
         if ' ' in text:
@@ -31,15 +34,24 @@ class Flop:
         else:
             temp = [text[0:2], text[2:4], text[4:6]]
         cls.flop = temp.copy()
+        cls.card_and_suit_count()
 
+    # count card and suit
     @classmethod
     def card_and_suit_count(cls):
         for card in cls.flop:
+            temp_card = card[0]
+            temp_suit = card[1]
+            cls.flop_card[deck.index(temp_card)] += 1
+            cls.flop_suit[suit.index(temp_suit)] += 1
+        print(cls.flop_card, cls.flop_suit)
 
+    # return flop
     @classmethod
     def get_flop_card(cls):
-        return cls.flop_card
-    
+        return cls.flop
+
+    # print flop
     def __str__(self):
         return self.flop[0] + self.flop[1] + self.flop[2]
 
