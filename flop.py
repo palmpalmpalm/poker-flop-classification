@@ -24,19 +24,22 @@ class Flop:
     def __init__(self, text):
         self.set_flop(text)
 
-    def set_flop(self, text):
+    @classmethod
+    def set_flop(cls, text):
         if ' ' in text:
             temp = text.split(' ')
         else:
             temp = [text[0:2], text[2:4], text[4:6]]
-        self.flop = temp.copy()
+        cls.flop = temp.copy()
 
-    def card_and_suit_count(self):
-        for card in self.flop
+    @classmethod
+    def card_and_suit_count(cls):
+        for card in cls.flop:
 
-    def get_flop_card(self):
-        return self.flop_card
-
+    @classmethod
+    def get_flop_card(cls):
+        return cls.flop_card
+    
     def __str__(self):
         return self.flop[0] + self.flop[1] + self.flop[2]
 
