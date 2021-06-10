@@ -1,3 +1,5 @@
+# Range container support input in GTO+ text combos format.
+
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -64,7 +66,6 @@ class Range:
         self.set_range(text)
 
     # set range to input combos in flopzilla/GTO+ format
-    @classmethod
     def set_range(cls, text):
         text_order = text.split(',')
         # print(text_order)
@@ -119,7 +120,6 @@ class Range:
         cls.set_percent_range()
 
     # store combos as percent to range_p
-    @classmethod
     def set_percent_range(cls):
         for i in range(cls.len_deck):
             for j in range(cls.len_deck):
@@ -131,7 +131,6 @@ class Range:
                     cls.range_p[i, j] = (cls.range_c[i, j] / 12) * 100
 
     # add combo to range
-    @classmethod
     def add_combo(cls, i, j, weight=100):
         if i == j:  # pocket
             w = (weight / 100) * 6
@@ -144,7 +143,6 @@ class Range:
             cls.range_c[i, j] = w
 
     # fill range to 100%
-    @classmethod
     def fill_100_range(cls):
         for i in range(cls.len_deck):
             for j in range(cls.len_deck):
@@ -156,35 +154,29 @@ class Range:
                     cls.range_c[i, j] = 12
 
     # get percent of available combos in range
-    @classmethod
     def get_percent_of_range(cls):
         total_combos = np.sum(cls.range_c)
         return (total_combos / 1326) * 100
 
     # get number of input combo
-    @classmethod
     def get_combo(cls, combo):
         i, j = get_combo_position(combo)
         return cls.range_c[i, j]
 
     # set number of input combo
-    @classmethod
     def set_combo(cls, number, combo):
         i, j = get_combo_position(combo)
         cls.range_c[i, j] = number
 
     # get number of input combo by position
-    @classmethod
     def get_combo_by_pos(cls, i, j):
         return cls.range_c[i, j]
 
     # set number of input combo by position
-    @classmethod
     def set_combo_by_pos(cls, number, i, j):
         cls.range_c[i, j] = number
 
     # display number of combos in range
-    @classmethod
     def show_combos(cls):
         fig, ax = plt.subplots()
         ax = sns.heatmap(cls.range_c, annot=cls.range_c, square=True, color='white')
@@ -197,7 +189,6 @@ class Range:
         plt.show()
 
     # display percent of combos in range
-    @classmethod
     def show_range(cls):
         fig, ax = plt.subplots()
         ax = sns.heatmap(cls.range_p, annot=cover, fmt='', cmap="YlGnBu", linewidths=.5, linecolor='black',
@@ -211,7 +202,6 @@ class Range:
         plt.show()
 
     # display combos and percent of range
-    @classmethod
     def show(cls):
         pass
 
