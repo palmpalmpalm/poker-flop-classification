@@ -35,7 +35,6 @@ class Flop:
         self.set_flush()
 
     # set flop
-    @classmethod
     def set_flop(cls, text):
         if ' ' in text:
             temp = text.split(' ')
@@ -44,7 +43,6 @@ class Flop:
         cls.flop = temp.copy()
 
     # count card and suit
-    @classmethod
     def card_and_suit_count(cls):
         for card in cls.flop:
             temp_card = card[0]
@@ -54,7 +52,6 @@ class Flop:
 
 
     # set cls.group ex. AHM AMM MML
-    @classmethod
     def set_group(cls):
         cards = cls.flop
         group_cards = ""
@@ -66,7 +63,6 @@ class Flop:
         cls.group = group_cards
 
     # set cls.paired ex. PAIRED UNPAIRED TRIPS
-    @classmethod
     def set_fullhouse(cls):
         if 3 in cls.flop_card: # TRIPS
             cls.paired = paired[0]
@@ -76,7 +72,6 @@ class Flop:
             cls.paired = paired[2]
 
     # set cls.flush ex. MONOTONE TWO-TONE RAINBOW
-    @classmethod
     def set_flush(cls):
         if 3 in cls.flop_suit: # MONOTONE
             cls.flush = flush[2]
@@ -86,7 +81,6 @@ class Flop:
             cls.flush = flush[0]
 
     # return flop card only (no suit)
-    @classmethod
     def get_flop_card(cls):
         return cls.flop[0][0] + cls.flop[1][0] + cls.flop[2][0]
 
